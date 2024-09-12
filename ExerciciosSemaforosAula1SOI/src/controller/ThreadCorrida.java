@@ -8,13 +8,17 @@ public class ThreadCorrida extends Thread {
 	private int distanciaPercorrida;
 	private int velocidadeBonus;
 	private Semaphore semaforo;
+	private Semaphore semaforoPorta;
 	private boolean cavaleiroPossuiTocha;
 	private static int temTocha = 0;
 	private static int temPedra = 0;
 	private static int portaEscolhida = 0;
 
-	public ThreadCorrida(Semaphore semaforo) {
+	//Criar semaforo diferente para a tocha e pedra.
+	
+	public ThreadCorrida(Semaphore semaforo, Semaphore semaforoPorta) {
 		this.semaforo = semaforo;
+		this.semaforoPorta = semaforoPorta;
 	}
 
 	@Override
@@ -49,6 +53,14 @@ public class ThreadCorrida extends Thread {
 			}
 			System.out.println("#" + id + " andou" + distanciaPercorrida);
 		}
+		try {
+			semaforoPorta.acquire();
+			escolherPorta();
+		} catch (Exception e) {
+			
+		} finally {
+			semaforoPorta.release();
+		}
 		System.out.println("#" + id + "chegou em " + distanciaPercorrida + " metros");
 
 	}
@@ -78,5 +90,6 @@ public class ThreadCorrida extends Thread {
 		while(i == portaEscolhida) {
 			i = (int) (Math.random() * 3) + 1;
 		}
+		portaEscolhida = i;
 	}
 }
